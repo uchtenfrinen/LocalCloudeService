@@ -1,0 +1,35 @@
+# ===== Environment / secrets =====
+# Real credentials. NEVER commit — use .env.example as the template.
+.env
+.env.*
+!.env.example
+*.env
+!*.env.example
+
+# ===== .NET build output =====
+bin/
+obj/
+*.user
+
+# ===== Visual Studio / Rider =====
+.vs/
+.idea/
+*.suo
+*.userosscache
+*.sln.docstates
+
+# ===== Go build output =====
+server
+server-linux
+*.exe
+
+# ===== Backend runtime data =====
+/data
+
+# ===== OS =====
+.DS_Store
+Thumbs.db
+
+# ===== Logs / temp =====
+*.log
+*.tmp

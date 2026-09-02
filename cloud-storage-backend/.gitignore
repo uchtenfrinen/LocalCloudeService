@@ -1,0 +1,7 @@
+/data
+/server
+*.exe
+.DS_Store
+.env
+!.env.example
+server-linux

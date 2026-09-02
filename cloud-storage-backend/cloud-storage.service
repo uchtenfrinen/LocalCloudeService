@@ -1,0 +1,13 @@
+[Unit]
+Description=Cloud Storage Backend
+After=network.target
+
+[Service]
+Type=simple
+EnvironmentFile=/etc/cloud-storage.env
+ExecStart=/opt/cloud-storage/server
+Restart=on-failure
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target
