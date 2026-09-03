@@ -10,7 +10,7 @@ public class Options
 {
     public bool Help;
     public int? Width;
-    public bool Color;
+    public bool Color = true;
     public string? Url;
     public string? Token;
     public string? RemotePath;

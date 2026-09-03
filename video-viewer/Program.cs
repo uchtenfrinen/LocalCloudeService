@@ -123,7 +123,7 @@ Requires ffmpeg and ffprobe on PATH.
 Options:
   -w, --width <n>     output width in characters (default: terminal width)
   -r, --fps <n>       override playback frame rate
-  -c, --color         24-bit ANSI truecolor output
+  -c, --color         24-bit ANSI truecolor (enabled by default)
   -n, --frames <n>    play only the first N frames
   -s, --seek <sec>    start at offset (seconds)
   --remote <path>     play a video stored on cloud-storage-backend

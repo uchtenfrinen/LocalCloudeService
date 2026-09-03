@@ -79,7 +79,7 @@ Usage:
 Options:
   -w, --width <n>    max output width in chars (default: terminal width)
   -H, --height <n>   max output height in rows (default: terminal height)
-  -c, --color        use 24-bit ANSI truecolor
+  -c, --color        24-bit ANSI truecolor (enabled by default)
   -l, --list         list remote folder instead of rendering
   --url <url>        cloud-storage-backend base URL (e.g. http://100.x.y.z:8080)
   --token <token>    API bearer token
