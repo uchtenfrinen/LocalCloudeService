@@ -54,8 +54,28 @@ internal static class Program
     private static async Task Play(string file, Options o)
     {
         var probe = Probe.Run(file);
-        int outW = o.Width ?? Math.Min(Console.BufferWidth - 1, 120);
-        int outH = Math.Max(1, (int)Math.Round(outW * (double)probe.Height / probe.Width * 0.5));
+
+        double aspect = (double)probe.Height / probe.Width; // height / width
+        double cellAspect = 0.5;                            // a terminal cell is ~2x tall
+
+        int maxW = Math.Max(10, Console.BufferWidth - 1);
+        int maxH = Math.Max(5, Console.BufferHeight - 2);
+
+        int outW;
+        if (o.Width.HasValue)
+        {
+            outW = o.Width.Value;
+        }
+        else
+        {
+            // fill as much of the terminal as possible while preserving aspect ratio
+            if (maxW * aspect * cellAspect <= maxH)
+                outW = maxW;
+            else
+                outW = Math.Max(10, (int)Math.Floor(maxH / (aspect * cellAspect)));
+        }
+        int outH = Math.Max(1, (int)Math.Round(outW * aspect * cellAspect));
+
         double fps = o.Fps ?? probe.Fps;
 
         int frameBytes = outW * outH * 3;
@@ -121,7 +141,7 @@ Usage:
 Requires ffmpeg and ffprobe on PATH.
 
 Options:
-  -w, --width <n>     output width in characters (default: terminal width)
+  -w, --width <n>     output width in characters (default: fills the terminal)
   -r, --fps <n>       override playback frame rate
   -c, --color         24-bit ANSI truecolor (enabled by default)
   -n, --frames <n>    play only the first N frames

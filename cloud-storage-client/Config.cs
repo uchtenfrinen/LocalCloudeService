@@ -51,11 +51,15 @@ internal sealed class AppConfig
             else if (args[i] == "--local" && i + 1 < args.Length) cfg.LocalCwd = args[++i];
             else if (args[i] == "--remote" && i + 1 < args.Length) cfg.RemoteCwd = args[++i];
             else if (args[i] == "--viewer" && i + 1 < args.Length) ViewerPath = args[++i];
+            else if (args[i] == "--video-viewer" && i + 1 < args.Length) VideoViewerPath = args[++i];
         }
 
         // env vars as a fallback for token/url (already loaded via .env or real env)
         cfg.Url = cfg.Url.Length == 0 ? Environment.GetEnvironmentVariable("STORAGE_URL") ?? "" : cfg.Url;
         cfg.Token = cfg.Token.Length == 0 ? Environment.GetEnvironmentVariable("STORAGE_TOKEN") ?? "" : cfg.Token;
+
+        ViewerPath = Environment.GetEnvironmentVariable("STORAGE_VIEWER") ?? ViewerPath;
+        VideoViewerPath = Environment.GetEnvironmentVariable("STORAGE_VIDEO_VIEWER") ?? VideoViewerPath;
 
         if (!Directory.Exists(cfg.LocalCwd))
             cfg.LocalCwd = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
@@ -77,4 +81,5 @@ internal sealed class AppConfig
     }
 
     public static string ViewerPath { get; set; } = "image-viewer";
+    public static string VideoViewerPath { get; set; } = "video-viewer";
 }

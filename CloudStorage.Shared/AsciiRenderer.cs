@@ -5,9 +5,10 @@ using SixLabors.ImageSharp.Processing;
 namespace CloudStorage.Shared;
 
 /// <summary>
-/// Converts pixel data into ASCII art with optional 24-bit ANSI truecolor.
-/// The span-based core is shared by all viewers; the image overload adds
-/// ImageSharp loading/resizing on top of it.
+/// Converts pixel data into ASCII art with 24-bit ANSI truecolor (each symbol
+/// is drawn in the color of the pixel it represents). The span-based core is
+/// shared by all viewers; the image overload adds ImageSharp loading/resizing
+/// on top of it.
 /// </summary>
 public static class AsciiRenderer
 {
@@ -20,7 +21,7 @@ public static class AsciiRenderer
     public static string Render(ReadOnlySpan<byte> rgb, int w, int h, bool color)
     {
         var sb = new System.Text.StringBuilder(w * (h + 1));
-        string reset = color ? "\u001b[0m" : "";
+        string reset = "\u001b[0m";
 
         for (int y = 0; y < h; y++)
         {
@@ -28,7 +29,7 @@ public static class AsciiRenderer
             {
                 int i = (y * w + x) * 3;
                 byte r = rgb[i], g = rgb[i + 1], b = rgb[i + 2];
-                sb.Append(Char(r, g, b, color));
+                sb.Append(Char(r, g, b));
             }
             sb.Append(reset).Append('\n');
         }
@@ -75,11 +76,11 @@ public static class AsciiRenderer
         return Render(rgb, outWidth, outHeight, color);
     }
 
-    private static string Char(byte r, byte g, byte b, bool color)
+    private static string Char(byte r, byte g, byte b)
     {
         float lum = (0.299f * r + 0.587f * g + 0.114f * b) / 255f;
         int idx = (int)Math.Round((1f - lum) * (Ramp.Length - 1));
         char c = Ramp[idx];
-        return color ? $"\u001b[38;2;{r};{g};{b}m{c}" : c.ToString();
+        return $"\u001b[38;2;{r};{g};{b}m{c}";
     }
 }

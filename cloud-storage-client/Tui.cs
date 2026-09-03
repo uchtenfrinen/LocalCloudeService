@@ -22,6 +22,9 @@ internal sealed partial class TuiApp
     private static readonly HashSet<string> ImageExt =
         new() { ".png", ".jpg", ".jpeg", ".gif", ".bmp", ".webp", ".avif" };
 
+    private static readonly HashSet<string> VideoExt =
+        new() { ".mp4", ".mkv", ".avi", ".mov", ".webm", ".m4v", ".mpg", ".mpeg", ".wmv", ".flv" };
+
     public TuiApp(AppConfig cfg, StorageClient client)
     {
         _cfg = cfg;
@@ -99,6 +102,9 @@ internal sealed partial class TuiApp
 
     private static bool IsImage(string name) =>
         ImageExt.Contains(Path.GetExtension(name).ToLowerInvariant());
+
+    private static bool IsVideo(string name) =>
+        VideoExt.Contains(Path.GetExtension(name).ToLowerInvariant());
 
     private static string? Prompt(string label)
     {

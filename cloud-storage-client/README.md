@@ -47,7 +47,8 @@ Manual alternative (same result, no setup needed):
 dotnet run -c Release -- \
   --url http://100.91.32.58:8080 \
   --token your_long_token \
-  --viewer /path/to/image-viewer
+  --viewer /path/to/image-viewer \
+  --video-viewer /path/to/video-viewer
 ```
 
 `csc` is a thin wrapper around the command above, so any extra args
@@ -59,7 +60,8 @@ dotnet run -c Release -- \
 |------|-------------|
 | `--url <url>` | Backend base URL, e.g. `http://100.64.0.5:8080` |
 | `--token <token>` | API bearer token |
-| `--viewer <path>` | Path to the `image-viewer` binary (used by `F3`) |
+| `--viewer <path>` | Path to the `image-viewer` binary (used by `F3` / Enter on images) |
+| `--video-viewer <path>` | Path to the `video-viewer` binary (used by `F3` / Enter on videos) |
 | `--local <path>` | Start the local panel in this directory |
 | `--remote <path>` | Start the remote panel in this folder |
 
@@ -109,8 +111,10 @@ The client refuses to do nonsensical things instead of throwing raw errors:
 
 ## How `F3` (view) works
 
-`F3` launches the `image-viewer` executable (path from `--viewer`, default
-`image-viewer` on `PATH`). For a remote file it passes `--remote <path> --url <url>
+`F3` (and `Enter` on a file) launches the matching viewer: the `image-viewer`
+executable for photos (path from `--viewer`, default `image-viewer` on `PATH`) and
+the `video-viewer` executable for videos (path from `--video-viewer`, default
+`video-viewer` on `PATH`). For a remote file it passes `--remote <path> --url <url>
 --token <token>`; for a local file it passes the local path. The TUI is suspended
 while the viewer runs, then redrawn when the viewer exits.
 

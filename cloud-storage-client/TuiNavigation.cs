@@ -20,7 +20,8 @@ internal sealed partial class TuiApp
         if (e == null) return;
         if (e.Name == "..") { _cfg.LocalCwd = e.Path; _localSel = 0; RefreshLocal(); return; }
         if (e.IsDir) { _cfg.LocalCwd = e.Path; _localSel = 0; RefreshLocal(); return; }
-        ViewLocal(e);
+        if (IsVideo(e.Name)) ViewLocal(e, "video-viewer");
+        else ViewLocal(e, "image-viewer");
     }
 
     private async Task ActivateRemote(CancellationToken ct = default)
@@ -36,7 +37,8 @@ internal sealed partial class TuiApp
             }
             else SetStatus("folder does not exist: /" + e.Path);
         }
-        else ViewRemote(e);
+        else if (IsVideo(e.Name)) ViewRemote(e, "video-viewer");
+        else ViewRemote(e, "image-viewer");
     }
 
     private void RefreshLocal()

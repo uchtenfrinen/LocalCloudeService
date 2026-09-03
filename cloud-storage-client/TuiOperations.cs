@@ -91,44 +91,49 @@ internal sealed partial class TuiApp
         if (_leftFocused)
         {
             var e = At(_local, _localSel);
-            if (e == null || e.IsDir || !IsImage(e.Name)) { SetStatus("pick an image file"); return; }
-            ViewLocal(e);
+            if (e == null || e.IsDir) { SetStatus("pick a file"); return; }
+            if (IsImage(e.Name)) ViewLocal(e, "image-viewer");
+            else if (IsVideo(e.Name)) ViewLocal(e, "video-viewer");
+            else SetStatus("unsupported file type");
         }
         else
         {
             var e = At(_remote, _remoteSel);
-            if (e == null || e.IsDir || !IsImage(e.Name)) { SetStatus("pick an image file"); return; }
-            ViewRemote(e);
+            if (e == null || e.IsDir) { SetStatus("pick a file"); return; }
+            if (IsImage(e.Name)) ViewRemote(e, "image-viewer");
+            else if (IsVideo(e.Name)) ViewRemote(e, "video-viewer");
+            else SetStatus("unsupported file type");
         }
     }
 
-    private void ViewLocal(Entry e) => LaunchViewer(new List<string> { e.Path });
+    private void ViewLocal(Entry e, string kind) => LaunchViewer(kind, new List<string> { e.Path });
 
-    private void ViewRemote(Entry e) =>
-        LaunchViewer(new List<string> { "--remote", e.Path, "--url", _cfg.Url, "--token", _cfg.Token });
+    private void ViewRemote(Entry e, string kind) =>
+        LaunchViewer(kind, new List<string> { "--remote", e.Path, "--url", _cfg.Url, "--token", _cfg.Token });
 
-    private static string ResolveViewer()
+    private static string ResolveViewer(string kind)
     {
-        var candidates = new List<string> { AppConfig.ViewerPath };
-        if (AppConfig.ViewerPath == "image-viewer")
+        string configured = kind == "video-viewer" ? AppConfig.VideoViewerPath : AppConfig.ViewerPath;
+        var candidates = new List<string> { configured };
+        if (configured == kind)
         {
             var dir = AppContext.BaseDirectory;
             while (dir != null)
             {
-                candidates.Add(Path.Combine(dir, "image-viewer", "bin", "Release", "net10.0", "image-viewer"));
-                candidates.Add(Path.Combine(dir, "image-viewer", "bin", "Debug", "net10.0", "image-viewer"));
-                candidates.Add(Path.Combine(dir, "image-viewer"));
+                candidates.Add(Path.Combine(dir, kind, "bin", "Release", "net10.0", kind));
+                candidates.Add(Path.Combine(dir, kind, "bin", "Debug", "net10.0", kind));
+                candidates.Add(Path.Combine(dir, kind));
                 dir = Path.GetDirectoryName(dir);
             }
         }
         foreach (var c in candidates)
             if (File.Exists(c)) return c;
-        return AppConfig.ViewerPath; // let the OS resolve via PATH
+        return configured; // let the OS resolve via PATH
     }
 
-    private void LaunchViewer(List<string> args)
+    private void LaunchViewer(string kind, List<string> args)
     {
-        var viewer = ResolveViewer();
+        var viewer = ResolveViewer(kind);
         var psi = new ProcessStartInfo { FileName = viewer, UseShellExecute = false };
         foreach (var a in args) psi.ArgumentList.Add(a);
         Console.Clear();
@@ -137,13 +142,14 @@ internal sealed partial class TuiApp
             var p = Process.Start(psi);
             if (p == null) throw new Exception("process did not start");
             p.WaitForExit();
-            Console.WriteLine("\n[image-viewer finished] Press any key to return to the file manager...");
+            Console.WriteLine($"\n[{kind} finished] Press any key to return to the file manager...");
             Console.ReadKey(true);
         }
         catch (Exception ex)
         {
-            Console.WriteLine("FAILED to launch image-viewer (" + viewer + "): " + ex.Message);
-            Console.WriteLine("Make sure image-viewer is built and on PATH, or start the client with --viewer /path/to/image-viewer");
+            Console.WriteLine("FAILED to launch " + kind + " (" + viewer + "): " + ex.Message);
+            Console.WriteLine("Make sure " + kind + " is built and on PATH, or start the client with --viewer /path/to/"
+                              + (kind == "video-viewer" ? "video-viewer" : "image-viewer"));
             Console.WriteLine("Press any key to return...");
             Console.ReadKey(true);
         }
